@@ -16,7 +16,7 @@ BAM!
 ./brainfuck <file>
 ```
 
-to interpret <file>, or just
+to interpret `<file>`, or just
 
 ```
 ./brainfuck
