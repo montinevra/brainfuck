@@ -1,5 +1,4 @@
 #include "brainfuck.h"
-#include <stdio.h>
 
 void	brainfuck(int fd)
 {
