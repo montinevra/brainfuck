@@ -1,58 +1,75 @@
 #include "brainfuck.h"
+#define BUF_SIZE 30000
 
 void	brainfuck(int fd)
 {
-	char			*ptr;
-	char			buffer[BUF_SIZE + 1];
-	unsigned int	ret;
-	unsigned int	i;
-	unsigned int	nested;
+	char	array[30000] = {0};
+	char	*ptr;
+	char	buffer[BUF_SIZE + 1];
+	int		ret;
+	int		i;
+	int		nested;
 
-	ptr = ft_memalloc(30000);
-	while ((ret = read(fd, buffer, BUF_SIZE)))
+	ptr = array;
+	while ((ret = read(fd, buffer, 400)))
 	{
 		i = 0;
 		while (buffer[i] && i < ret)
 		{
-			if (buffer[i] == '>')
-				++ptr;
-			else if (buffer[i] == '<')
-				--ptr;
-			else if (buffer[i] == '+')
-				++*ptr;
-			else if (buffer[i] == '-')
-				--*ptr;
-			else if (buffer[i] == '.')
-				ft_putchar(*ptr);
-			else if (buffer[i] == ',')
-				read(0, ptr, 1);
-			else if (buffer[i] == '[')
+			switch (buffer[i])
 			{
-				if (!*ptr)
-				{
-					nested = 0;
-					while (buffer[++i] != ']' || nested)
+				case '>':
+					++ptr;
+					break;
+				case '<':
+					--ptr;
+					break;
+				case '+':
+					++*ptr;
+					break;
+				case '-':
+					--*ptr;
+					break;
+				case '.':
+					putchar(*ptr);
+					break;
+				case ',':
+					read(0, ptr, 1);
+					break;
+				case '[':
+					if (!*ptr)
 					{
-						if (buffer[i] == '[')
-							nested++;
-						else if (buffer[i] == ']')
-							nested--;
+						nested = 0;
+						while (buffer[++i] != ']' || nested)
+						{
+							if (buffer[i] == '[')
+							{
+								nested++;
+							}
+							else if (buffer[i] == ']')
+							{
+								nested--;
+							}
+						}
 					}
-				}
-			}
-			else if (buffer[i] == ']')
-			{
-				if (*ptr)
-				{
-					nested = 0;
-					while (buffer[--i] != '[' || nested)
+					break;
+				case ']':
+					if (*ptr)
 					{
-						if (buffer[i] == ']')
-							nested++;
-						else if (buffer[i] == '[')
-							nested--;
+						nested = 0;
+						while (buffer[--i] != '[' || nested)
+						{
+							if (buffer[i] == ']')
+							{
+								nested++;
+							}
+							else if (buffer[i] == '[')
+							{
+								nested--;
+							}
+						}
 					}
-				}
+					break;
 			}
 			i++;
 		}
@@ -64,8 +81,11 @@ int		main(int argc, char **argv)
 	int fd;
 
 	if (argc == 1)
+	{
 		brainfuck(0);
+	}
 	else
+	{
 		while (--argc)
 		{
 			fd = open(*(++argv), O_RDONLY);
@@ -75,5 +95,6 @@ int		main(int argc, char **argv)
 				close(fd);
 			}
 		}
+	}
 	return (0);
 }
